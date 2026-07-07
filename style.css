@@ -1,0 +1,427 @@
+/* ============================================================
+   Esri Türkiye · Organizasyon Şeması
+   Tema: Light mode · Esri Mavisi + departman renkleri
+   Yerleşim: Yatay ağaç + dikey (liste) hibrit
+   ============================================================ */
+
+:root {
+  /* Esri kurumsal mavi ailesi */
+  --esri-blue:        #0079c1;
+  --esri-blue-dark:   #005e95;
+  --esri-blue-darker: #00426b;
+  --esri-green:       #3fa535;
+
+  /* Aydınlık yüzey paleti */
+  --bg-1: #eef4fa;
+  --bg-2: #e2ebf4;
+  --surface: #ffffff;
+  --surface-soft: #f7fafd;
+  --border: rgba(18, 52, 86, 0.12);
+  --border-soft: rgba(18, 52, 86, 0.08);
+
+  --text:      #17324a;
+  --text-soft: #4a6580;
+  --text-dim:  #7b93a8;
+
+  --shadow-sm: 0 2px 8px rgba(20, 55, 90, 0.08);
+  --shadow-md: 0 10px 28px rgba(20, 55, 90, 0.12);
+  --shadow-lg: 0 20px 46px rgba(20, 55, 90, 0.20);
+
+  --card-w: 208px;
+  --gap-x: 30px;   /* kardeşler arası yatay boşluk */
+  --gap-y: 60px;   /* seviyeler arası dikey boşluk */
+
+  /* kartlarda departman rengi (JS ile override edilir) */
+  --accent: var(--esri-blue);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1100px 760px at 12% -8%, rgba(0, 121, 193, 0.10), transparent 55%),
+    radial-gradient(1000px 700px at 100% 0%, rgba(63, 165, 53, 0.10), transparent 52%),
+    linear-gradient(160deg, var(--bg-1), var(--bg-2));
+}
+
+/* ---------- Arka plan yumuşak ışıklar ---------- */
+.aurora {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 20s ease-in-out infinite;
+}
+.aurora--1 { width: 460px; height: 460px; top: -140px; left: -90px;
+  background: radial-gradient(circle, rgba(0,121,193,0.35), transparent 70%); }
+.aurora--2 { width: 540px; height: 540px; bottom: -200px; right: -120px;
+  background: radial-gradient(circle, rgba(63,165,53,0.30), transparent 70%); animation-delay: -7s; }
+.aurora--3 { width: 380px; height: 380px; top: 42%; left: 58%;
+  background: radial-gradient(circle, rgba(122,92,208,0.22), transparent 70%); opacity: .35; animation-delay: -12s; }
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(40px, -30px) scale(1.08); }
+}
+
+/* ---------- Arka plan topografik konturlar ---------- */
+.topo {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.topo use {
+  fill: none;
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke; /* ölçeklenince çizgi incelmesin */
+}
+.topo--blue  use { stroke: rgba(0, 121, 193, 0.30); }
+.topo--green use { stroke: rgba(63, 165, 53, 0.28); }
+
+/* ---------- Üst bar ---------- */
+.topbar {
+  position: fixed; inset: 0 0 auto 0;
+  z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 14px 26px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.72));
+  border-bottom: 1px solid var(--border-soft);
+  backdrop-filter: blur(10px);
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand__logo { height: 48px; width: auto; display: block; flex: 0 0 auto; }
+.brand__text {
+  display: flex; flex-direction: column; line-height: 1.2;
+  padding-left: 14px; margin-left: 2px;
+  border-left: 1px solid var(--border);
+}
+.brand__text strong { font-size: 17px; }
+.brand__text span { font-size: 12.5px; }
+.brand__text strong { font-size: 16px; font-weight: 800; letter-spacing: .2px; color: var(--esri-blue-darker); }
+.brand__text span { font-size: 12px; color: var(--text-dim); }
+
+/* ---------- Hazırlayan (sağ üst) ---------- */
+.author {
+  display: flex; align-items: baseline; gap: 6px;
+  padding: 7px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+.author__label { font-size: 12px; font-weight: 500; color: var(--text-dim); }
+.author__name { font-size: 13.5px; font-weight: 700; color: var(--esri-blue-dark); }
+
+.controls { display: flex; align-items: center; gap: 12px; }
+#search {
+  width: 240px; max-width: 42vw;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .2s, box-shadow .2s;
+}
+#search::placeholder { color: var(--text-dim); }
+#search:focus {
+  border-color: var(--esri-blue);
+  box-shadow: 0 0 0 3px rgba(0, 121, 193, 0.16);
+}
+
+.zoom-group {
+  display: flex; align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.zoom-group button {
+  border: 0; background: transparent; color: var(--text-soft);
+  padding: 9px 13px; font-size: 15px; cursor: pointer;
+  font-family: inherit; transition: background .15s, color .15s;
+}
+.zoom-group button:hover { background: rgba(0, 121, 193, 0.10); color: var(--esri-blue); }
+.zoom-group button + button { border-left: 1px solid var(--border); }
+#zoomReset { font-size: 12px; font-weight: 600; }
+
+/* ---------- Sahne / kaydırma alanı ---------- */
+.stage {
+  position: absolute; inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  cursor: grab;
+}
+.stage.dragging { cursor: grabbing; }
+
+.canvas {
+  position: absolute; top: 0; left: 0;
+  transform-origin: 0 0;
+  padding: 130px 90px 110px;
+  will-change: transform;
+}
+
+/* ---------- Bağlantı çizgileri (SVG) ---------- */
+.lines {
+  position: absolute; top: 0; left: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+.lines path { fill: none; }
+
+/* ---------- Ağaç yerleşimi ---------- */
+.tree { position: relative; z-index: 1; display: inline-block; }
+
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* dikey liste yerleşimli düğüm: kart solda, alt ekip aşağıda hizalı */
+.node--vlist { align-items: flex-start; }
+
+.children {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--gap-x);
+  padding-top: var(--gap-y);
+}
+/* dikey (liste) alt ekip */
+.children--vertical {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+  padding-top: 30px;
+  padding-left: 40px;   /* omurga + dirsek çizgisine yer */
+}
+/* çok sayıda yaprak için ızgara (Member partnerler) */
+.children--grid {
+  display: grid;
+  grid-template-columns: repeat(3, var(--card-w));
+  gap: 10px;
+  padding: 26px 16px 16px;
+  margin-top: 4px;
+  border-radius: 16px;
+  border: 1px dashed var(--border);
+  background: rgba(154, 161, 172, 0.07);
+}
+
+.children.collapsed { display: none; }
+
+/* ---------- Kart ---------- */
+.card {
+  position: relative;
+  width: var(--card-w);
+  padding: 13px 14px 12px 17px;
+  border-radius: 15px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform .26s cubic-bezier(.2,.8,.2,1),
+              box-shadow .26s, border-color .26s;
+  overflow: hidden;
+}
+/* sol kenar departman renk şeridi */
+.card::after {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--accent);
+  opacity: .95;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: var(--shadow-md), 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.card__top { display: flex; align-items: center; gap: 11px; }
+.card__avatar {
+  flex: 0 0 auto;
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  display: grid; place-items: center;
+  color: #fff;
+  background: linear-gradient(140deg,
+              color-mix(in srgb, var(--accent) 100%, white 0%),
+              color-mix(in srgb, var(--accent) 60%, #ffffff 12%));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.card__avatar svg { width: 20px; height: 20px; display: block; }
+.card--root .card__avatar svg { width: 24px; height: 24px; }
+.card__id { min-width: 0; }
+.card__name {
+  font-size: 13.5px; font-weight: 700; letter-spacing: .1px;
+  margin: 0 0 2px; line-height: 1.2; color: var(--text);
+}
+.card__title {
+  font-size: 11px; font-weight: 500; color: var(--text-soft);
+  line-height: 1.3; margin: 0;
+}
+.card__badge {
+  display: inline-block; margin-top: 10px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .3px;
+  text-transform: uppercase;
+  padding: 3px 9px; border-radius: 999px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, white);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* kök (Şirket Müdürü) ve CEO vurgusu */
+.card--root {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: var(--shadow-md), 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.card--root .card__avatar { width: 44px; height: 44px; border-radius: 13px; font-size: 15px; }
+.card--root .card__name { font-size: 15px; }
+
+/* ---------- Üst katman kartları ---------- */
+/* Esri Global — devasa, dolu marka kartı */
+.card--global {
+  width: 340px;
+  padding: 22px 24px;
+  border: 0;
+  background: linear-gradient(135deg, var(--esri-blue-darker), var(--esri-blue) 55%, var(--esri-green));
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,.15) inset;
+}
+.card--global::after { display: none; }
+.card--global .card__avatar {
+  width: 58px; height: 58px; border-radius: 16px;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+}
+.card--global .card__avatar svg { width: 32px; height: 32px; }
+.card--global .card__name  { font-size: 23px; color: #fff; }
+.card--global .card__title { font-size: 13px; color: rgba(255, 255, 255, 0.82); }
+.card--global .card__name::after { color: rgba(255, 255, 255, 0.85); }
+
+/* Esri Türkiye — distribütör, güçlü çerçeve */
+.card--distributor {
+  width: 250px;
+  border: 2px solid color-mix(in srgb, var(--esri-blue) 55%, transparent);
+  box-shadow: var(--shadow-md), 0 0 0 4px color-mix(in srgb, var(--esri-blue) 12%, transparent);
+}
+.card--distributor .card__avatar { width: 46px; height: 46px; border-radius: 13px; }
+.card--distributor .card__avatar svg { width: 24px; height: 24px; }
+.card--distributor .card__name { font-size: 17px; }
+
+/* İç Organizasyon / Partner Ekosistemi — bölüm başlıkları */
+.card--section { width: 230px; }
+.card--section .card__name { font-size: 15px; }
+
+/* Partner kartları — nötr renk + kesikli çerçeve (dış ekosistem) */
+.card--partner { border-style: dashed; background: var(--surface-soft); }
+
+/* alt ekibi olan kartta katlanma göstergesi */
+.card.has-children .card__name::after {
+  content: "▾";
+  font-size: 10px; color: var(--accent);
+  margin-left: 7px; vertical-align: middle;
+  transition: transform .25s;
+}
+.card.collapsed-parent .card__name::after { transform: rotate(-90deg); display: inline-block; }
+
+/* arama vurgusu / soluklaştırma */
+.card.match {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent), var(--shadow-md);
+}
+.card.dimmed { opacity: .32; filter: saturate(.55); }
+
+/* ---------- Departman lejantı ---------- */
+.legend {
+  position: fixed; left: 16px; bottom: 16px;
+  z-index: 20;
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 12px 12px 13px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-md);
+  max-width: 260px;
+}
+.legend__title {
+  font-size: 10px; font-weight: 700; letter-spacing: .5px;
+  text-transform: uppercase; color: var(--text-dim);
+  margin: 0 4px 4px;
+}
+.legend__item {
+  display: flex; align-items: center; gap: 9px;
+  width: 100%; text-align: left;
+  font-family: inherit; font-size: 11.5px; color: var(--text-soft);
+  padding: 5px 7px; border: 0; border-radius: 8px;
+  background: transparent; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.legend__item:hover { background: rgba(18, 52, 86, 0.06); color: var(--text); }
+.legend__item.active { background: rgba(18, 52, 86, 0.08); color: var(--text); font-weight: 600; }
+.legend__dot {
+  width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto;
+  transition: box-shadow .15s;
+}
+.legend__item.active .legend__dot { box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 0%, rgba(0,0,0,0.06)); }
+.legend__label { line-height: 1.2; }
+
+/* görev tanımı paneli */
+.legend__detail {
+  --accent: var(--esri-blue);
+  display: none;
+  margin-top: 8px; padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-left: 4px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, white);
+  animation: legendIn .2s ease;
+}
+.legend__detail.show { display: block; }
+.legend__detail-name {
+  margin: 0 0 5px; font-size: 12px; font-weight: 700; color: var(--accent);
+}
+.legend__detail-text {
+  margin: 0; font-size: 11.5px; line-height: 1.45; color: var(--text-soft);
+}
+@keyframes legendIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Alt ipucu ---------- */
+.hint {
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
+  z-index: 20;
+  font-size: 11.5px; color: var(--text-soft);
+  padding: 7px 16px; border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+/* ---------- Duyarlı ---------- */
+@media (max-width: 720px) {
+  :root { --card-w: 172px; --gap-x: 20px; --gap-y: 46px; }
+  #search { width: 150px; }
+  .legend { display: none; }
+  .hint { font-size: 10px; max-width: 92vw; overflow: hidden; text-overflow: ellipsis; }
+}
