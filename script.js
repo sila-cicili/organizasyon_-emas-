@@ -462,10 +462,13 @@ stage.addEventListener("wheel", (e) => {
 // Sürükleyerek kaydır
 let drag = null;
 stage.addEventListener("pointerdown", (e) => {
+  e.preventDefault();                 // metin seçimini engelle
   drag = { sx: e.clientX, sy: e.clientY, ox: state.x, oy: state.y };
   stage.classList.add("dragging");
   stage.setPointerCapture(e.pointerId);
 });
+// Bazı tarayıcılarda seçim yine başlarsa güvence katmanı
+stage.addEventListener("selectstart", (e) => e.preventDefault());
 stage.addEventListener("pointermove", (e) => {
   if (!drag) return;
   state.x = drag.ox + (e.clientX - drag.sx);
